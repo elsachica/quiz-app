@@ -1,6 +1,6 @@
 {
   "name": "assignment-b2-the-quiz",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "1DV025 - Examination Assignment Module B - The quiz",
   "type": "module",
   "browser": "src/js/index.js",
@@ -19,7 +19,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@lnu/eslint-config": "^1.1.4",
-    "vite": "^2.6.7"
+    "@lnu/eslint-config": "^1.1.7",
+    "vite": "^3.1.8"
   }
 }
