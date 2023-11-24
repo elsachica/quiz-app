@@ -5,7 +5,7 @@
  * @version 1.1.0
  */
 
-import './components/my-hello/index.js'
+import './my-components/nickname-form/nickname-form.js'
 
 const messageContainer = document.querySelector('#messageContainer')
 const message = document.createTextNode('Hi from an ECMAScript Module.')

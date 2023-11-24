@@ -1,39 +1,62 @@
-// nickname-form.js
+/**
+ * The nickname-form component module.
+ *
+ * @author Elsa Gas Wikström <eg223ps@student.lnu.se>
+ * @version 1.1.0
+ */
 
-class NicknameForm extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open' });
-      this.shadowRoot.innerHTML = `
-        <style>
-          /* Add your styles here */
-        </style>
-        <!-- Your nickname form UI goes here -->
-      `;
-    }
-  
-    // Add methods and logic for handling nickname input
-  }
-  
-  customElements.define('nickname-form', NicknameForm);
-
-  
-          // -------------------------------- andra lösningen ------------------------------ //
-
-          // nickname-form.js
-
-// Define template.
-const template = document.createElement('template');
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    /* Add your styling for the nickname form here */
-  </style>
+  div {
+    text-align: center;
+    margin: 20px;
+  }
+
+  form {
+    display: inline-block;
+    background-color: #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+  }
+
+  input[type="submit"] {
+    background-color: #4caf50;
+    color: white;
+    cursor: pointer;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #45a049;
+  }
+
+  p {
+    color: red;
+    margin-top: 10px;
+  }  </style>
   <div>
-    <label for="nickname">Enter your nickname:</label>
-    <input type="text" id="nickname" />
-    <button id="submitNickname">Submit</button>
+    <form>
+        <label for="nickname">Please write your nickname:</label>
+        <input id="nickname" type="text" placeholder="Enter your nickname" />
+        <input id="submitNickname" type="submit" value="Submit" />
+    </form>
+    <p></p>
   </div>
-`;
+`
 
 customElements.define('nickname-form',
   /**
@@ -45,85 +68,78 @@ customElements.define('nickname-form',
      *
      * @type {HTMLFormElement}
      */
-    #form;
+    #form
 
     /**
      * The input element for the nickname.
      *
      * @type {HTMLInputElement}
      */
-    #nicknameInput;
+    #nicknameInput
 
     /**
      * The submit button.
      *
      * @type {HTMLButtonElement}
      */
-    #submitButton;
+    #submitButton
+
+    #nicknameEvent
 
     /**
      * Creates an instance of the current type.
      */
-    constructor() {
-      super();
+    constructor () {
+      super()
 
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
       this.attachShadow({ mode: 'open' })
-        .appendChild(template.content.cloneNode(true));
+        .appendChild(template.content.cloneNode(true))
 
       // Get elements in the shadow root.
-      this.#form = this.shadowRoot.querySelector('div');
-      this.#nicknameInput = this.shadowRoot.querySelector('#nickname');
-      this.#submitButton = this.shadowRoot.querySelector('#submitNickname');
-
-      // Bind the event handlers.
-      this.#form.addEventListener('submit', this.#handleSubmit.bind(this));
+      this.#form = this.shadowRoot.querySelector('form')
+      this.#nicknameInput = this.shadowRoot.querySelector('#nickname')
+      this.#submitButton = this.shadowRoot.querySelector('#submitNickname')
     }
 
     /**
-     * Called after the element is inserted into the DOM.
-     */
-    connectedCallback() {
-      // Additional initialization logic can go here.
-    }
-
-    /**
-     * Handles the form submission.
+     * Attaches an event listener to the submit button to handle the click event.
      *
-     * @param {Event} event - The submit event.
+     * @returns {void}
      */
-    #handleSubmit(event) {
-      event.preventDefault();
+    connectedCallback () {
+      /**
+       * Event listener callback for the submit button click event.
+       *
+       * @param event - The click event.
+       * @returns {void}
+       */
+      this.#submitButton.addEventListener('click', this.#nicknameEvent = (event) => this.getNickname(event))
+    }
 
-      const nickname = this.#nicknameInput.value.trim();
+    /**
+     * Removes the event listener for the nickname button when the element is disconnected from the DOM.
+     *
+     * @returns {void}
+     */
+    disconnectedCallback () {
+      this.#submitButton.removeEventListener('', this.#nicknameEvent)
+    }
 
-      if (nickname !== '') {
-        // Dispatch an event with the entered nickname.
-        this.dispatchEvent(new CustomEvent('nicknameSubmitted', {
-          detail: { nickname },
-          bubbles: true,
-          composed: true,
-        }));
+    /**
+     * Retrieves the nickname from the input field and dispatches a 'nickname' event with the nickname as the event detail.
+     *
+     * @param {Event} event - The event object.
+     */
+    getNickname (event) {
+      event.preventDefault()
+      if (this.#nicknameInput.value) {
+      this.dispatchEvent(new window.CustomEvent('nickname', { detail: this.#nicknameInput.value }))
+      } else {
+        const alertMissingNickname = this.shadowRoot.querySelector('p')
+        alertMissingNickname.textContent = 'Please enter a nickname'
       }
     }
-
-    /**
-     * Gets the current nickname.
-     *
-     * @returns {string} The nickname value.
-     */
-    get nickname() {
-      return this.#nicknameInput.value.trim();
-    }
-
-    /**
-     * Sets the initial value for the nickname.
-     *
-     * @param {string} value - The initial nickname.
-     */
-    set nickname(value) {
-      this.#nicknameInput.value = value;
-    }
   }
-);
+)
