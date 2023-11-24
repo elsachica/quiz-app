@@ -14,11 +14,16 @@ template.innerHTML = `
   </div>
 `
 
-  customElements.define('quiz-question-answer',
+customElements.define('quiz-question-answer',
 
+  /**
+   *
+   */
   class extends HTMLElement {
-
-    constructor() {
+    /**
+     *
+     */
+    constructor () {
       super()
 
       this.attachShadow({ mode: 'open' })

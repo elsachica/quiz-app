@@ -1,134 +1,139 @@
 // quiz-question.js
 
 class QuizQuestion extends HTMLElement {
-    constructor() {
-      super();
-      this.attachShadow({ mode: 'open' });
-      this.shadowRoot.innerHTML = `
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this.shadowRoot.innerHTML = `
         <style>
           /* Add your styles here */
         </style>
         <!-- Your quiz question UI goes here -->
       `;
-    }
-  
-    // Add methods and logic to handle displaying questions and receiving user input
   }
-  
-  customElements.define('quiz-question', QuizQuestion);
-  
+
+  // Add methods and logic to handle displaying questions and receiving user input
+}
+
+customElements.define('quiz-question', QuizQuestion);
+
 
     // -------------------------------- andra lösningen ------------------------------ //
-    <!-- quiz-question.js -->
+    // <!-- quiz-question.js -->
 
-    <!-- Define template for the quiz-question component -->
-    <template id="quiz-question-template">
-      <style>
-        /* Add any styling you need for the question here */
-        .question-container {
-          margin: 20px 0;
-        }
+    // <!-- Define template for the quiz-question component -->
+//     <template id="quiz-question-template">
+//       <style>
+//         /* Add any styling you need for the question here */
+//         .question-container {
+//           margin: 20px 0;
+//         }
     
-        .options-container {
-          margin-top: 10px;
-        }
-      </style>
-      <div class="question-container">
-        <p id="question-text"></p>
-        <div class="options-container" id="options-container"></div>
-        <button id="submit-button">Submit Answer</button>
-      </div>
-    </template>
+//         .options-container {
+//           margin-top: 10px;
+//         }
+//       </style>
+//       <div class="question-container">
+//         <p id="question-text"></p>
+//         <div class="options-container" id="options-container"></div>
+//         <button id="submit-button">Submit Answer</button>
+//       </div>
+//     </template>
     
-    <!-- Define the quiz-question web component -->
-    <script>
-      class QuizQuestion extends HTMLElement {
-        constructor() {
-          super();
+//     // <!-- Define the quiz-question web component -->
+//     <script>
+//       class QuizQuestion extends HTMLElement {
+//         constructor() {
+//           super();
     
-          // Attach a shadow DOM to the element
-          this.attachShadow({ mode: 'open' });
+//           // Attach a shadow DOM to the element
+//           this.attachShadow({ mode: 'open' });
     
-          // Clone the template content into the shadow DOM
-          this.shadowRoot.appendChild(
-            document.getElementById('quiz-question-template').content.cloneNode(true)
-          );
+//           // Clone the template content into the shadow DOM
+//           this.shadowRoot.appendChild(
+//             document.getElementById('quiz-question-template').content.cloneNode(true)
+//           );
     
-          // Get references to relevant elements
-          this.questionTextElement = this.shadowRoot.getElementById('question-text');
-          this.optionsContainerElement = this.shadowRoot.getElementById('options-container');
-          this.submitButton = this.shadowRoot.getElementById('submit-button');
+//           // Get references to relevant elements
+//           this.questionTextElement = this.shadowRoot.getElementById('question-text');
+//           this.optionsContainerElement = this.shadowRoot.getElementById('options-container');
+//           this.submitButton = this.shadowRoot.getElementById('submit-button');
     
-          // Event listener for the submit button
-          this.submitButton.addEventListener('click', () => this.submitAnswer());
-        }
+//           // Event listener for the submit button
+//           this.submitButton.addEventListener('click', () => this.submitAnswer());
+//         }
     
-        // Attributes to monitor for changes
-        static get observedAttributes() {
-          return ['question'];
-        }
+//         // Attributes to monitor for changes
+//         static get observedAttributes() {
+//           return ['question'];
+//         }
     
-        // Handle changes to observed attributes
-        attributeChangedCallback(name, oldValue, newValue) {
-          if (name === 'question') {
-            this.renderQuestion(newValue);
-          }
-        }
+//         // Handle changes to observed attributes
+//         attributeChangedCallback(name, oldValue, newValue) {
+//           if (name === 'question') {
+//             this.renderQuestion(newValue);
+//           }
+//         }
     
-        // Method to render the question and options
-        renderQuestion(question) {
-          const parsedQuestion = JSON.parse(question);
+//         // Method to render the question and options
+//         renderQuestion(question) {
+//           const parsedQuestion = JSON.parse(question);
     
-          // Set the question text
-          this.questionTextElement.textContent = parsedQuestion.text;
+//           // Set the question text
+//           this.questionTextElement.textContent = parsedQuestion.text;
     
-          // Clear previous options
-          this.optionsContainerElement.innerHTML = '';
+//           // Clear previous options
+//           this.optionsContainerElement.innerHTML = '';
     
-          // Create radio buttons for each option
-          parsedQuestion.options.forEach((option, index) => {
-            const radioInput = document.createElement('input');
-            radioInput.type = 'radio';
-            radioInput.name = 'options';
-            radioInput.value = `alt${index + 1}`;
-            this.optionsContainerElement.appendChild(radioInput);
+//           // Create radio buttons for each option
+//           parsedQuestion.options.forEach((option, index) => {
+//             const radioInput = document.createElement('input');
+//             radioInput.type = 'radio';
+//             radioInput.name = 'options';
+//             radioInput.value = `alt${index + 1}`;
+//             this.optionsContainerElement.appendChild(radioInput);
     
-            const label = document.createElement('label');
-            label.textContent = option;
-            this.optionsContainerElement.appendChild(label);
+//             const label = document.createElement('label');
+//             label.textContent = option;
+//             this.optionsContainerElement.appendChild(label);
     
-            this.optionsContainerElement.appendChild(document.createElement('br'));
-          });
-        }
+//             this.optionsContainerElement.appendChild(document.createElement('br'));
+//           });
+//         }
     
-        // Method to submit the answer
-        submitAnswer() {
-          const selectedOption = this.shadowRoot.querySelector('input[name="options"]:checked');
+//         // Method to submit the answer
+//         submitAnswer() {
+//           const selectedOption = this.shadowRoot.querySelector('input[name="options"]:checked');
     
-          if (selectedOption) {
-            const answer = selectedOption.value;
-            // Dispatch a custom event to notify the parent component about the answer
-            this.dispatchEvent(new CustomEvent('answer-submitted', { detail: answer }));
-          } else {
-            // Handle case where no option is selected
-            console.error('Please select an option before submitting.');
-          }
-        }
-      }
+//           if (selectedOption) {
+//             const answer = selectedOption.value;
+//             // Dispatch a custom event to notify the parent component about the answer
+//             this.dispatchEvent(new CustomEvent('answer-submitted', { detail: answer }));
+//           } else {
+//             // Handle case where no option is selected
+//             console.error('Please select an option before submitting.');
+//           }
+//         }
+//       }
     
-      // Define the custom element
-      customElements.define('quiz-question', QuizQuestion);
-    </script>
-    
-    // This code assumes that you will set the question as an attribute when using the component, like this:
-    // <quiz-question question='{"text": "What is the capital of France?", "options": ["Berlin", "Madrid", "Paris", "Rome"]}'>
-    // </quiz-question>
+//       // Define the custom element
+//       customElements.define('quiz-question', QuizQuestion);
+//     </script>
 
-        // -------------------------------- tredje lösningen ------------------------------ //
+// // This code assumes that you will set the question as an attribute when using the component, like this:
+// // <quiz-question question='{"text": "What is the capital of France?", "options": ["Berlin", "Madrid", "Paris", "Rome"]}'>
+// // </quiz-question>
 
-        // quiz-question.js
+// -------------------------------- tredje lösningen ------------------------------ //
 
-const template = document.createElement('template');
+/**
+ * The nickname-form component module.
+ *
+ * @author Elsa Gas Wikström <eg223ps@student.lnu.se>
+ * @version 1.1.0
+ */
+
+const template = document.createElement('template')
 template.innerHTML = `
   <style>
     /* Add your styles for the quiz question component */
@@ -137,7 +142,7 @@ template.innerHTML = `
     <p id="question-text"></p>
     <div id="options-container"></div>
   </div>
-`;
+`
 
 customElements.define('quiz-question',
   class extends HTMLElement {
@@ -151,7 +156,7 @@ customElements.define('quiz-question',
       this.questionText = this.shadowRoot.getElementById('question-text');
       this.optionsContainer = this.shadowRoot.getElementById('options-container');
 
-      this.questionData = null; // Store the current question data here
+      this.questionData = null // Store the current question data here
     }
 
     /**

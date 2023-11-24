@@ -1,4 +1,33 @@
-// quiz-application.js
+/**
+ * The nickname-form component module.
+ *
+ * @author Elsa Gas Wikström <eg223ps@student.lnu.se>
+ * @version 1.1.0
+ */
+
+import './nickname-form.js'
+import './countdown-timer.js'
+import './quiz-question.js'
+import './high-score.js'
+
+const template = document.createElement('template')
+template.innerHTML = `
+  <style>
+    /* Add your styles for the quiz question component */
+  </style>
+  <div>
+  </div>
+`
+
+customElements.define('quiz-application',
+  class extends HTMLElement {
+    constructor() {
+      super()
+
+      this.attachShadow({ mode: 'open' })
+      this.shadowRoot.appendChild(template.content.cloneNode(true))
+
+
 
 class QuizApplication extends HTMLElement {
     constructor() {
@@ -12,7 +41,7 @@ class QuizApplication extends HTMLElement {
         <countdown-timer id="countdownTimer"></countdown-timer>
         <quiz-question id="quizQuestion"></quiz-question>
         <high-score id="highScore"></high-score>
-      `;
+      `
     }
   
     connectedCallback() {
@@ -25,9 +54,7 @@ class QuizApplication extends HTMLElement {
       // Add event listeners and other initialization logic
     }
   }
-  
-  customElements.define('quiz-application', QuizApplication);
-  
+    
 
   // -------------------------------- andra lösningen ------------------------------ //
 
@@ -76,16 +103,21 @@ class QuizApplication extends HTMLElement {
       });
     }
   
-    fetchNextQuestion() {
-      // Use fetch API to get the next question from the server
-      fetch('https://courselab.lnu.se/quiz/question/1') // Adjust the URL accordingly
-        .then(response => response.json())
-        .then(data => {
-          this.currentQuestion = data;
-          this.shadowRoot.getElementById('question').question = this.currentQuestion;
-        })
-        .catch(error => console.error('Error fetching question:', error));
+    async fetchNextQuestion() {
+      try {
+        // Använd fetch API för att hämta nästa fråga från servern
+        const response = await fetch('https://courselab.lnu.se/quiz/question/1'); // Justera URL:en efter behov
+        const data = await response.json()
+    
+        // Sätt aktuell fråga och uppdatera webbkomponenten med frågan
+        this.currentQuestion = data
+        this.shadowRoot.getElementById('question').question = this.currentQuestion
+      } catch (error) {
+        // Om det uppstår ett fel, logga felet till konsolen
+        console.error('Error fetching question:', error)
+      }
     }
+    
   
     startTimer() {
       this.timerInterval = setInterval(() => {
@@ -123,6 +155,4 @@ class QuizApplication extends HTMLElement {
       this.shadowRoot.getElementById('highScore').updateHighScore(this.nickname, this.timer);
     }
   }
-  
-  customElements.define('quiz-application', QuizApplication);
-  
+    

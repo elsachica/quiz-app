@@ -112,7 +112,7 @@ customElements.define('nickname-form',
       /**
        * Event listener callback for the submit button click event.
        *
-       * @param event - The click event.
+       * @param {Event} event - The click event.
        * @returns {void}
        */
       this.#submitButton.addEventListener('click', this.#nicknameEvent = (event) => this.getNickname(event))
@@ -135,7 +135,7 @@ customElements.define('nickname-form',
     getNickname (event) {
       event.preventDefault()
       if (this.#nicknameInput.value) {
-      this.dispatchEvent(new window.CustomEvent('nickname', { detail: this.#nicknameInput.value }))
+        this.dispatchEvent(new window.CustomEvent('nickname', { detail: this.#nicknameInput.value }))
       } else {
         const alertMissingNickname = this.shadowRoot.querySelector('p')
         alertMissingNickname.textContent = 'Please enter a nickname'
