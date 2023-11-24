@@ -13,11 +13,11 @@
 //       this.timerElement = this.shadowRoot.getElementById('timer');
 //       this.timeRemaining = 20;
 //     }
-  
+
 //     connectedCallback() {
 //       this.startTimer();
 //     }
-  
+
 //     startTimer() {
 //       this.timerInterval = setInterval(() => {
 //         if (this.timeRemaining > 0) {
@@ -31,7 +31,7 @@
 //       }, 1000);
 //     }
 //   }
-  
+
 //   customElements.define('countdown-timer', CountdownTimer);
 
 //   // -------------------------------- andra lösningen ------------------------------ //

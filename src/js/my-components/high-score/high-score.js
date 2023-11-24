@@ -11,12 +11,12 @@
 //         <!-- Your high score UI goes here -->
 //       `;
 //     }
-  
+
 //     // Add methods and logic for displaying and updating high scores
 //   }
-  
+
 //   customElements.define('high-score', HighScore);
-  
+
 // // -------------------------------- andra lösningen ------------------------------ //
 
 // // high-score.js
@@ -41,7 +41,7 @@
 //       text-align: left;
 //     }
 //   </style>
-  
+
 //   <div id="highScoreContainer">
 //     <h2>High Score</h2>
 //     <table id="highScoreTable">

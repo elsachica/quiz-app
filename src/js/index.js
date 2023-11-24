@@ -5,10 +5,7 @@
  * @version 1.1.0
  */
 
+import './my-components/quiz-application/quiz-application.js'
 import './my-components/nickname-form/nickname-form.js'
-
-const messageContainer = document.querySelector('#messageContainer')
-const message = document.createTextNode('Hi from an ECMAScript Module.')
-messageContainer.appendChild(message)
-
-// TODO: This is just some example code that you are free to use, modify or completely delete.
+import './my-components/quiz-question/quiz-question.js'
+import './my-components/quiz-question/quiz-question-answer.js'
