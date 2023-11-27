@@ -52,20 +52,15 @@ template.innerHTML = `
 customElements.define('quiz-application',
 
 class extends HTMLElement {
-    #nicknameForm // Privat fält
-
     constructor () {
       super()
-
       this.nickname = ''
       this.currentQuestion = null
+      // this.timer = 20; // Default timer value in seconds
+      // this.timerInterval = null
 
       this.attachShadow({ mode: 'open' })
       this.shadowRoot.appendChild(template.content.cloneNode(true))
-
-      // Hämta referens till det privata fältet inom skuggdomen
-      this.#nicknameForm = this.shadowRoot.getElementById('nicknameForm')
-      // Nu kan du använda this.#nicknameForm för att referera till ditt element
     }
 
     connectedCallback () {
@@ -87,7 +82,7 @@ class extends HTMLElement {
         const data = await response.json()
 
         // Uppdatera direkt frågekomponenten med frågan
-        this.shadowRoot.getElementById('question').question = data
+        this.shadowRoot.getElementById('question').question = this.currentQuestion
       } catch (error) {
         // Om det uppstår ett fel, logga felet till konsolen
         console.error('Error fetching question:', error)
