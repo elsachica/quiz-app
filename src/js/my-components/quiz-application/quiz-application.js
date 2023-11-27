@@ -5,118 +5,80 @@
  * @version 1.1.0
  */
 
-import './nickname-form.js'
-import './countdown-timer.js'
-import './quiz-question.js'
-import './high-score.js'
+import '../nickname-form/index.js'
 
 const template = document.createElement('template')
 template.innerHTML = `
-  <style>
-    /* Add your styles for the quiz question component */
-  </style>
-  <div>
-        <nickname-form id="nicknameForm"></nickname-form>
-        <countdown-timer id="timer" limit="${this.timer}"></countdown-timer>
-        <quiz-question id="question"></quiz-question>
-        <high-score id="highScore"></high-score>
-  </div>
-`
+<style>
+    /* .form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    .form__input {
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        width: 100%;
+        max-width: 20rem;
+        margin-bottom: 1rem;
+    }
+    .form__button {
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        width: 100%;
+        max-width: 20rem;
+        margin-bottom: 1rem;
+    }
+    .form__button:hover {
+        background-color: #ccc;
+    }
+    .form__button:active {
+        background-color: #ccc; 
+    }
+    */
+</style>
 
+<div>
+    <h1>Start game</h1>
+        <nickname-form id="nicknameForm"></nickname-form>
+</div>
+`
 customElements.define('quiz-application',
-  class extends HTMLElement {
-    constructor() {
+
+class extends HTMLElement {
+    #nicknameForm // Privat fält
+
+    constructor () {
       super()
 
       this.nickname = ''
       this.currentQuestion = null
-      // this.timer = 20; // Default timer value in seconds
-      // this.timerInterval = null
 
       this.attachShadow({ mode: 'open' })
       this.shadowRoot.appendChild(template.content.cloneNode(true))
-  
-    connectedCallback() {
-      this.startGame();
-    }
-  
-    startGame() {
-      this.shadowRoot.getElementById('nicknameForm').addEventListener('nickname-chosen', (event) => {
-        this.nickname = event.detail.nickname;
-        this.fetchNextQuestion();
-        this.startTimer();
-      });
-  
-      this.shadowRoot.getElementById('question').addEventListener('answer-submitted', (event) => {
-        const isCorrect = this.submitAnswer(event.detail.answer);
-        if (isCorrect) {
-          this.fetchNextQuestion();
-        } else {
-          this.endGame();
-        }
-      });
+
+      // Hämta referens till det privata fältet inom skuggdomen
+      this.#nicknameForm = this.shadowRoot.getElementById('nicknameForm')
+      // Nu kan du använda this.#nicknameForm för att referera till ditt element
     }
 
-    /**
-   * Fetches the next question from the server using the fetch API.
-   * @async
-   * @returns {Promise<void>}
-   */
-    async fetchNextQuestion() {
-      try {
-        // Använd fetch API för att hämta nästa fråga från servern
-        const response = await fetch('https://courselab.lnu.se/quiz/question/1') // Justera URL:en efter behov
-        const data = await response.json()
-    
-        // Sätt aktuell fråga och uppdatera webbkomponenten med frågan
-        this.currentQuestion = data
-        this.shadowRoot.getElementById('question').question = this.currentQuestion
-        console.log(data)
-      } catch (error) {
-        // Om det uppstår ett fel, logga felet till konsolen
-        console.error('Error fetching question:', error)
-      }
+    connectedCallback () {
+      window.addEventListener('nickname', (event) => {
+        this.startGame(event)
+      })
     }
-  }
-  
-    startTimer() {
-      this.timerInterval = setInterval(() => {
-        this.timer--;
-  
-        if (this.timer <= 0) {
-          this.endGame();
-        }
-  
-        this.shadowRoot.getElementById('timer').setAttribute('value', this.timer);
-      }, 1000);
+
+    startGame (event) {
+      this.nickname = event.detail.nickname
+      this.fetchNextQuestion()
+      this.startTimer()
     }
-  
-    async submitAnswer(answer) {
-      const requestBody = {
-        nickname: this.nickname,
-        answer: answer,
-      };
-    
-      try {
-        const response = await fetch('https://example.com/submit-answer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        });
-    
-        const data = await response.json();
-        return data.correct;
-      } catch (error) {
-        console.error('Error submitting answer:', error);
-        return false
-      }
-    }
-  
-    endGame() {
-      clearInterval(this.timerInterval);
-      this.shadowRoot.getElementById('highScore').updateHighScore(this.nickname, this.timer);
-    }
-  })
-    
+
+})
+

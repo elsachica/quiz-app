@@ -84,8 +84,6 @@ customElements.define('nickname-form',
      */
     #submitButton
 
-    #nicknameEvent
-
     /**
      * Creates an instance of the current type.
      */
@@ -101,6 +99,7 @@ customElements.define('nickname-form',
       this.#form = this.shadowRoot.querySelector('form')
       this.#nicknameInput = this.shadowRoot.querySelector('#nickname')
       this.#submitButton = this.shadowRoot.querySelector('#submitNickname')
+      this.getNickname = this.getNickname.bind(this)
     }
 
     /**
@@ -115,7 +114,7 @@ customElements.define('nickname-form',
        * @param {Event} event - The click event.
        * @returns {void}
        */
-      this.#submitButton.addEventListener('click', this.#nicknameEvent = (event) => this.getNickname(event))
+      this.#form.addEventListener('submit', this.getNickname)
     }
 
     /**
@@ -124,7 +123,7 @@ customElements.define('nickname-form',
      * @returns {void}
      */
     disconnectedCallback () {
-      this.#submitButton.removeEventListener('', this.#nicknameEvent)
+      this.#form.removeEventListener('submit', this.getNickname)
     }
 
     /**
@@ -135,7 +134,10 @@ customElements.define('nickname-form',
     getNickname (event) {
       event.preventDefault()
       if (this.#nicknameInput.value) {
-        this.dispatchEvent(new window.CustomEvent('nickname', { detail: this.#nicknameInput.value }))
+        this.dispatchEvent(new CustomEvent('nickname', {
+          bubbles: true,
+          detail: this.#nicknameInput.value
+        }))
       } else {
         const alertMissingNickname = this.shadowRoot.querySelector('p')
         alertMissingNickname.textContent = 'Please enter a nickname'

@@ -5,7 +5,11 @@
  * @version 1.1.0
  */
 
-import './my-components/quiz-application/quiz-application.js'
-import './my-components/nickname-form/nickname-form.js'
-import './my-components/quiz-question/quiz-question.js'
-import './my-components/quiz-question/quiz-question-answer.js'
+import './my-components/nickname-form/index.js'
+import './my-components/quiz-application/index.js'
+
+const nicknameform = document.createElement('nickname-form')
+document.body.appendChild(nicknameform)
+window.addEventListener('nickname', (event) => {
+  console.log('hej')
+})
