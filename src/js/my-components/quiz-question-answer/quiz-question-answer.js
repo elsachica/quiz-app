@@ -24,8 +24,8 @@ customElements.define('quiz-question-answer',
       super()
 
       this.attachShadow({ mode: 'open' })
-      .appendChild(template.content.cloneNode(true))
-      
+        .appendChild(template.content.cloneNode(true))
+
       this.#answerContainer = this.shadowRoot.getElementById('answer-container')
     }
 

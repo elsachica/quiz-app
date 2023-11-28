@@ -135,7 +135,6 @@ customElements.define('nickname-form',
       event.preventDefault()
       if (this.#nicknameInput.value) {
         this.dispatchEvent(new CustomEvent('nickname', {
-          bubbles: true,
           detail: this.#nicknameInput.value
         }))
       } else {

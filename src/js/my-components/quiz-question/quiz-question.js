@@ -9,7 +9,7 @@
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    /* Add your styles for the quiz question component */
+    /* stil */
   </style>
     <div>
       <h2 id="question-title"></h2>

@@ -6,6 +6,8 @@
  */
 
 import '../nickname-form/index.js'
+import '../quiz-question/index.js'
+import '../quiz-question-answer/index.js'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -45,17 +47,19 @@ template.innerHTML = `
 </style>
 
 <div>
-    <h1>Start game</h1>
         <nickname-form id="nicknameForm"></nickname-form>
+        <quiz-question id="question"></quiz-question>
+        <quiz-question-answer id="answer"></quiz-question-answer>
 </div>
 `
 customElements.define('quiz-application',
 
 class extends HTMLElement {
     constructor () {
+
+
       super()
       this.nickname = ''
-      this.currentQuestion = null
       // this.timer = 20; // Default timer value in seconds
       // this.timerInterval = null
 
@@ -63,11 +67,29 @@ class extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true))
     }
 
-    connectedCallback () {
-      window.addEventListener('nickname', (event) => {
+    // connectedCallback anropas när webbkomponenten är ansluten till DOM
+    connectedCallback() {
+      // Hämta referensen till elementet med id 'nicknameForm' i skuggDOMen
+      const nicknameForm = this.shadowRoot.querySelector('#nicknameForm')
+
+      // Skapa en namngiven funktion handleNicknameForm som tar emot ett event och anropar startGame med det
+      this.handleNicknameForm = (event) => {
         this.startGame(event)
-      })
+      };
+
+      // Lägg till händelselyssnare för 'nickname-form'-händelsen och anropa handleNicknameForm vid inträffande
+      nicknameForm.addEventListener('nickname-form', this.handleNicknameForm)
     }
+
+    // disconnectedCallback anropas när webbkomponenten tas bort från DOM
+    disconnectedCallback() {
+      // Hämta referensen till elementet med id 'nicknameForm' i skuggDOMen
+      const nicknameForm = this.shadowRoot.querySelector('#nicknameForm')
+
+      // Ta bort händelselyssnare för 'nickname-form'-händelsen med handleNicknameForm som referens
+      nicknameForm.removeEventListener('nickname-form', this.handleNicknameForm)
+    }
+
 
     startGame (event) {
       this.nickname = event.detail.nickname
@@ -81,8 +103,7 @@ class extends HTMLElement {
         const response = await fetch('https://courselab.lnu.se/quiz/question/1')
         const data = await response.json()
 
-        // Uppdatera direkt frågekomponenten med frågan
-        this.shadowRoot.getElementById('question').question = this.currentQuestion
+        this.shadowRoot.getElementById('question').setQuestion(data)
       } catch (error) {
         // Om det uppstår ett fel, logga felet till konsolen
         console.error('Error fetching question:', error)
@@ -96,12 +117,12 @@ class extends HTMLElement {
       }
 
       try {
-        const response = await fetch('https://courselab.lnu.se/quiz/question/1', {
+        const response = await fetch('https://courselab.lnu.se/quiz/answer/1', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(requestBody),
+          body: JSON.stringify(requestBody)
         })
 
         const data = await response.json()
