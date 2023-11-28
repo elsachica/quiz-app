@@ -7,7 +7,6 @@
 
 import '../nickname-form/index.js'
 import '../quiz-question/index.js'
-import '../quiz-question-answer/index.js'
 
 const template = document.createElement('template')
 template.innerHTML = `

@@ -114,7 +114,7 @@ customElements.define('nickname-form',
        * @param {Event} event - The click event.
        * @returns {void}
        */
-      this.#form.addEventListener('submit', this.getNickname)
+      this.#form.addEventListener('submitNickname', this.getNickname)
     }
 
     /**
@@ -123,7 +123,7 @@ customElements.define('nickname-form',
      * @returns {void}
      */
     disconnectedCallback () {
-      this.#form.removeEventListener('submit', this.getNickname)
+      this.#form.removeEventListener('submitNickname', this.getNickname)
     }
 
     /**

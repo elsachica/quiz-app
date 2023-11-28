@@ -11,9 +11,12 @@ template.innerHTML = `
     /* stil */
   </style>
     <div>
-      <h2 id="question-title"></h2>
-      <div id="question-answer"></div>
-      <div id="answer-container"></div>
+      <form>
+        <h2 id="question-title"></h2>
+        <div id="question-answer"></div>
+        <div id="answer-container"></div>
+        <input id="submitAnswer" type="submit" value="Submit" />
+      </form>
     </div>
 `
 // lägg in en from med distpatchevent och eventlisnentnensr
@@ -26,6 +29,7 @@ customElements.define('quiz-question',
     #questionTitle
     #questionAnswer
     #answerContainer
+    #submitAnswer
 
     /**
      *
@@ -39,13 +43,21 @@ customElements.define('quiz-question',
       this.#questionTitle = this.shadowRoot.querySelector('question-title')
       this.#questionAnswer = this.shadowRoot.querySelector('question-answer')
       this.#answerContainer = this.shadowRoot.querySelector('answer-container')
+      this.#submitAnswer = this.shadowRoot.querySelector('submitAnswer')
+    }
+
+    connectecCallback () {
+      this.#submitAnswer.addEventListener('click', event => {
+        event.preventDefault()
+        this.dispatchEvent(new CustomEvent('submitAnswer', { detail: this.#answerContainer.value }))
+      })
     }
 
     /**
      *
      * @param data
      */
-    setQuestion (data) {
+    setQuestion (data) { // showQuestionTitle
       this.#questionTitle = document.createElement('h2')
       this.#questionTitle.textContent = data.question
       this.#questionAnswer.showAnswer(data) // (url, data)??
@@ -78,6 +90,7 @@ customElements.define('quiz-question',
 
         this.#answerContainer.appendChild(textField)
       }
+      this.dispatchEvent(new CustomEvent('submitAnswer', { detail: data }))
     }
   }
 )
