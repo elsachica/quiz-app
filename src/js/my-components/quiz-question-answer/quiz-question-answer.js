@@ -33,10 +33,10 @@ customElements.define('quiz-question-answer',
      *
      * @param data
      */
-    setAnswer (data) {
+    showAnswer (data) {
       this.#answerContainer.innerHTML = '' // Rensa tidigare svar
 
-      if (data.options && data.options.length > 1) {
+      if (data.options && data.options.length > 1) { //alternatives
         // Visa radiobuttons för flera alternativ
         data.options.forEach((option, index) => {
           const radioButton = document.createElement('input')

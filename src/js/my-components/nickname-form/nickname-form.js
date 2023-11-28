@@ -134,7 +134,7 @@ customElements.define('nickname-form',
     getNickname (event) {
       event.preventDefault()
       if (this.#nicknameInput.value) {
-        this.dispatchEvent(new CustomEvent('nickname', {
+        this.dispatchEvent(new CustomEvent('nickname-form', {
           detail: this.#nicknameInput.value
         }))
       } else {

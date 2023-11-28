@@ -5,6 +5,7 @@
  * @version 1.1.0
  */
 
+import '../quiz-question-answer/index.js'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -16,7 +17,8 @@ template.innerHTML = `
       <div id="question-answer"></div>
     </div>
 `
-
+// lägg in en from med distpatchevent och eventlisnentnensr
+//submitknapp utlöser en hädelse samma som i nicknameform
 customElements.define('quiz-question',
   /**
    *
@@ -44,7 +46,7 @@ customElements.define('quiz-question',
      */
     setQuestion (data) {
       this.#questionTitle.textContent = data.question
-      this.#questionAnswer.setAnswer(data)
+      this.#questionAnswer.showAnswer(data) // (url, data)??
     }
   }
 )
