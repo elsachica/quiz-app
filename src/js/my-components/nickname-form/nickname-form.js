@@ -112,7 +112,7 @@ customElements.define('nickname-form',
        * @param {Event} event - The click event.
        * @returns {void}
        */
-      this.#form.addEventListener('submit', this.getNickname.bind(this))
+      this.#submitNickname.addEventListener('submit', this.getNickname.bind(this))
     }
 
     /**
@@ -121,7 +121,7 @@ customElements.define('nickname-form',
      * @returns {void}
      */
     disconnectedCallback () {
-      this.#form.removeEventListener('submit', this.getNickname)
+      this.#submitNickname.removeEventListener('submit', this.getNickname)
     }
 
     /**
@@ -132,7 +132,7 @@ customElements.define('nickname-form',
     getNickname (event) {
       event.preventDefault()
       if (this.#nicknameInput.value) {
-        this.dispatchEvent(new CustomEvent('nickname-form', {
+        this.dispatchEvent(new CustomEvent('submitNicknameClicked', {
           detail: this.#nicknameInput.value
         }))
       } else {

@@ -86,12 +86,12 @@ class extends HTMLElement {
       this.#handleNicknameForm = (event) => {
         this.startGame(event) 
       }
-      
-      this.nicknameForm.addEventListener('nickname-form', this.#handleNicknameForm) // Här läggs händelselyssnaren till på nicknameForm-elementet. Lyssnaren är kopplad till händelsen "nickname-form" och kommer att aktivera den tidigare definierade händelsehanteraren när händelsen inträffar.
+
+      this.nicknameForm.addEventListener('submitNicknameClicked', this.#handleNicknameForm) // Här läggs händelselyssnaren till på nicknameForm-elementet. Lyssnaren är kopplad till händelsen "nickname-form" och kommer att aktivera den tidigare definierade händelsehanteraren när händelsen inträffar.
     }
 
     disconnectedCallback() {
-      this.nicknameForm.removeEventListener('nickname-form', this.handleNicknameForm) // Här tas händelselyssnaren bort från nicknameForm-elementet för händelsen "nickname-form". Detta innebär att den tidigare definierade händelsehanteraren inte längre kommer att aktiveras när händelsen inträffar.
+      this.nicknameForm.removeEventListener('submitNicknameClicked', this.handleNicknameForm) // Här tas händelselyssnaren bort från nicknameForm-elementet för händelsen "nickname-form". Detta innebär att den tidigare definierade händelsehanteraren inte längre kommer att aktiveras när händelsen inträffar.
     }
 
     async startGame(event) {
