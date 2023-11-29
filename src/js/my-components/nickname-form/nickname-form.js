@@ -68,7 +68,7 @@ customElements.define('nickname-form',
      *
      * @type {HTMLFormElement}
      */
-    // #form
+    #form
 
     /**
      * The input element for the nickname.
@@ -83,6 +83,7 @@ customElements.define('nickname-form',
      * @type {HTMLButtonElement}
      */
     #submitNickname
+    
 
     /**
      * Creates an instance of the current type.
@@ -95,11 +96,9 @@ customElements.define('nickname-form',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      // Get elements in the shadow root.
-      // this.#form = this.shadowRoot.querySelector('form') vet inte om denna behövs
       this.#nicknameInput = this.shadowRoot.querySelector('#nickname')
       this.#submitNickname = this.shadowRoot.querySelector('#submit-nickname')
-      this.getNickname = this.getNickname.bind(this)
+      this.#form = this.shadowRoot.querySelector('form')
     }
 
     /**
@@ -114,7 +113,7 @@ customElements.define('nickname-form',
        * @param {Event} event - The click event.
        * @returns {void}
        */
-      this.#submitNickname.addEventListener('submit-nickname', this.getNickname)
+      this.#form.addEventListener('submit', this.getNickname.bind(this))
     }
 
     /**
@@ -123,7 +122,7 @@ customElements.define('nickname-form',
      * @returns {void}
      */
     disconnectedCallback () {
-      this.#submitNickname.removeEventListener('submit-nickname', this.getNickname)
+      this.#form.removeEventListener('submit', this.getNickname)
     }
 
     /**
