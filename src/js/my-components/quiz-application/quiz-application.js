@@ -46,9 +46,10 @@ template.innerHTML = `
 </style>
 
 <div>
-        <nickname-form id="nicknameForm"></nickname-form>
-        <quiz-question id="question"></quiz-question>
-        <quiz-question-answer id="answer"></quiz-question-answer>
+        <nickname-form></nickname-form>
+        <quiz-question></quiz-question>
+        <high-score> </high-score>
+        <countdown-timer> </countdown-timer>
 </div>
 `
 customElements.define('quiz-application',
@@ -57,11 +58,15 @@ class extends HTMLElement {
     #nickname
     // #timer
     // #timerInterval
-  #handleNicknameForm
+    #handleNicknameForm
 
+    #nicknameForm
+    #quizQuestion
+    #highScore
+    #countdownTimer
+    
 
     constructor () {
-
       super()
       this.#nickname = ''
       // this.#timer = 20; // Default timer value in seconds
@@ -69,34 +74,36 @@ class extends HTMLElement {
 
       this.attachShadow({ mode: 'open' })
       this.shadowRoot.appendChild(template.content.cloneNode(true))
+
+      this.#nicknameForm = this.shadowRoot.querySelector('nickname-form')
+      this.#quizQuestion = this.shadowRoot.querySelector('quiz-question')
+      this.#countdownTimer = this.shadowRoot.querySelector('high-score')
+      this.#highScore = this.shadowRoot.querySelector('countdown-timer')
     }
 
     connectedCallback() {
-      const nicknameForm = this.shadowRoot.querySelector('#nicknameForm')
-
+      // En anonym funktion this.#handleNicknameForm definieras som en händelsehanterare för händelsen "nickname-form". När denna händelse inträffar, kommer funktionen startGame(event) att kallas.
       this.#handleNicknameForm = (event) => {
-        this.startGame(event)
+        this.startGame(event) 
       }
-      nicknameForm.addEventListener('nickname-form', this.#handleNicknameForm)
+      
+      this.nicknameForm.addEventListener('nickname-form', this.#handleNicknameForm) // Här läggs händelselyssnaren till på nicknameForm-elementet. Lyssnaren är kopplad till händelsen "nickname-form" och kommer att aktivera den tidigare definierade händelsehanteraren när händelsen inträffar.
     }
 
     disconnectedCallback() {
-      const nicknameForm = this.shadowRoot.querySelector('#nickname-form')
-
-      nicknameForm.removeEventListener('nickname-form', this.handleNicknameForm)
+      this.nicknameForm.removeEventListener('nickname-form', this.handleNicknameForm) // Här tas händelselyssnaren bort från nicknameForm-elementet för händelsen "nickname-form". Detta innebär att den tidigare definierade händelsehanteraren inte längre kommer att aktiveras när händelsen inträffar.
     }
 
     async startGame(event) {
-      this.#nickname = event.detail.nickname;
-      const div = this.shadowRoot.querySelector('div')
-      const nicknameForm = document.querySelector('nickname-form');
-      div.remove(nicknameForm)
-      this.nextQuestion()
+      this.#nickname = event.detail.nickname
+      const nicknameForm = document.querySelector('nickname-form')
+      this.remove(nicknameForm) // funkar det om jag skriver this.nicknameForm.remove()?
+      this.nextQuestion('https://courselab.lnu.se/quiz/question/1')
     }
 
-    async nextQuestion (questionData) {
-      const savedQuestion = await this.fetchNextQuestion(questionData)
-      this.showQuestion(savedQuestion)
+    async nextQuestion (url) {
+      const savedQuestion = await this.fetchNextQuestion(url)
+      this.#quizQuestion.showQuestion(savedQuestion) // skapa en referens i constructor
       this.startTimer()
       this.controllAnswer()
     }

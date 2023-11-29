@@ -83,7 +83,6 @@ customElements.define('nickname-form',
      * @type {HTMLButtonElement}
      */
     #submitNickname
-    
 
     /**
      * Creates an instance of the current type.
@@ -97,7 +96,7 @@ customElements.define('nickname-form',
         .appendChild(template.content.cloneNode(true))
 
       this.#nicknameInput = this.shadowRoot.querySelector('#nickname')
-      this.#submitNickname = this.shadowRoot.querySelector('#submit-nickname')
+      this.#submitNickname = this.shadowRoot.querySelector('#submitNickname')
       this.#form = this.shadowRoot.querySelector('form')
     }
 
