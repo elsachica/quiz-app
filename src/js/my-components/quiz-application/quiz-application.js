@@ -7,6 +7,8 @@
 
 import '../nickname-form/index.js'
 import '../quiz-question/index.js'
+import '../high-score/index.js'
+import '../countdown-timer/index.js'
 
 const template = document.createElement('template')
 template.innerHTML = `
@@ -77,8 +79,8 @@ class extends HTMLElement {
 
       this.#nicknameForm = this.shadowRoot.querySelector('nickname-form')
       this.#quizQuestion = this.shadowRoot.querySelector('quiz-question')
-      this.#countdownTimer = this.shadowRoot.querySelector('high-score')
-      this.#highScore = this.shadowRoot.querySelector('countdown-timer')
+      this.#highScore = this.shadowRoot.querySelector('high-score')
+      this.#countdownTimer = this.shadowRoot.querySelector('countdown-timer')
     }
 
     connectedCallback() {
@@ -87,24 +89,23 @@ class extends HTMLElement {
         this.startGame(event) 
       }
 
-      this.nicknameForm.addEventListener('submitNicknameClicked', this.#handleNicknameForm) // Här läggs händelselyssnaren till på nicknameForm-elementet. Lyssnaren är kopplad till händelsen "nickname-form" och kommer att aktivera den tidigare definierade händelsehanteraren när händelsen inträffar.
+      this.#nicknameForm.addEventListener('submitNicknameClicked', this.#handleNicknameForm) // Här läggs händelselyssnaren till på nicknameForm-elementet. Lyssnaren är kopplad till händelsen "nickname-form" och kommer att aktivera den tidigare definierade händelsehanteraren när händelsen inträffar.
     }
 
     disconnectedCallback() {
-      this.nicknameForm.removeEventListener('submitNicknameClicked', this.handleNicknameForm) // Här tas händelselyssnaren bort från nicknameForm-elementet för händelsen "nickname-form". Detta innebär att den tidigare definierade händelsehanteraren inte längre kommer att aktiveras när händelsen inträffar.
+      this.#nicknameForm.removeEventListener('submitNicknameClicked', this.#handleNicknameForm) // Här tas händelselyssnaren bort från nicknameForm-elementet för händelsen "nickname-form". Detta innebär att den tidigare definierade händelsehanteraren inte längre kommer att aktiveras när händelsen inträffar.
     }
 
     async startGame(event) {
       this.#nickname = event.detail.nickname
-      const nicknameForm = document.querySelector('nickname-form')
-      this.remove(nicknameForm) // funkar det om jag skriver this.nicknameForm.remove()?
+      this.#nicknameForm.remove()
       this.nextQuestion('https://courselab.lnu.se/quiz/question/1')
     }
 
     async nextQuestion (url) {
       const savedQuestion = await this.fetchNextQuestion(url)
-      this.#quizQuestion.showQuestion(savedQuestion) // skapa en referens i constructor
-      this.startTimer()
+      this.#quizQuestion.showQuestion(savedQuestion)
+      this.#countdownTimer.startTimer()
       this.controllAnswer()
     }
 
@@ -114,6 +115,7 @@ class extends HTMLElement {
         const response = await fetch(url)
         const questionData = await response.json()
 
+        console.log(questionData)
         return questionData
       } catch (error) {
         // Om det uppstår ett fel, logga felet till konsolen
@@ -144,18 +146,6 @@ class extends HTMLElement {
         console.error('Error controlling answer:', error);
         // Handle the error as needed
       }
-    }
-
-    startTimer () {
-      this.timerInterval = setInterval(() => {
-        this.timer--
-
-        if (this.timer <= 0) {
-          this.endGame()
-        }
-
-        this.shadowRoot.getElementById('timer').setAttribute('value', this.timer)
-      }, 1000)
     }
 
     endGame () {

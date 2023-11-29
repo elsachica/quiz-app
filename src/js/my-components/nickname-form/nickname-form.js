@@ -106,13 +106,10 @@ customElements.define('nickname-form',
      * @returns {void}
      */
     connectedCallback () {
-      /**
-       * Event listener callback for the submit button click event.
-       *
-       * @param {Event} event - The click event.
-       * @returns {void}
-       */
-      this.#submitNickname.addEventListener('submit', this.getNickname.bind(this))
+      this.#form.addEventListener('submit', (event) => {
+        event.preventDefault()
+        this.getNickname(event)
+      })
     }
 
     /**
@@ -121,7 +118,10 @@ customElements.define('nickname-form',
      * @returns {void}
      */
     disconnectedCallback () {
-      this.#submitNickname.removeEventListener('submit', this.getNickname)
+      this.#form.removeEventListener('submit', (event) => {
+        event.preventDefault()
+        this.getNickname(event)
+      })
     }
 
     /**

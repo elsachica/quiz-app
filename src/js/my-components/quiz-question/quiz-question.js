@@ -13,7 +13,6 @@ template.innerHTML = `
       <form>
         <h2 id="question-title"></h2>
         <div id="question-answer"></div>
-        <div id="answerContainer">
         <input id="submitAnswer" type="submit" class="hidden" value="Submit" />
       </form>
     </div>
@@ -25,9 +24,10 @@ customElements.define('quiz-question',
    *
    */
   class extends HTMLElement {
+    #questionTitle
     #questionAnswer
-    #answerContainer
     #submitAnswer
+    #selectedAnswer
 
     /**
      *
@@ -38,9 +38,11 @@ customElements.define('quiz-question',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      this.#questionAnswer = this.shadowRoot.querySelector('question-answer')
-      this.#answerContainer = this.shadowRoot.querySelector('answer-container')
-      this.#submitAnswer = this.shadowRoot.querySelector('submit-answer')
+      this.#questionTitle = this.shadowRoot.querySelector('#question-title')
+      this.#questionAnswer = this.shadowRoot.querySelector('#question-answer')
+      // this.#answerContainer = this.shadowRoot.querySelector('#answer-container')
+      this.#submitAnswer = this.shadowRoot.querySelector('#submit-answer')
+      this.#selectedAnswer = this.shadowRoot.querySelector('#selected-answer')
     }
 
     connectecCallback () {
@@ -58,20 +60,15 @@ customElements.define('quiz-question',
      * @param question
      */
 
-    showQuestion(question) {
+    showQuestion(savedQuestion) {
       this.#questionAnswer.textContent = '' // Clear previous answer
+
+      // skapar frågans titel
+      this.#questionTitle.textContent = savedQuestion.question
     
-      const questionTitle = document.createElement('h2');
-      questionTitle.textContent = question.question;
-      this.#questionAnswer.appendChild(questionTitle);
-    
-      const answerContainer = document.createElement('div');
-      answerContainer.id = 'answer-container'
-      this.#questionAnswer.appendChild(answerContainer);
-    
-      if (question.alternatives) {
+      if (savedQuestion.alternatives) {
         // Handle questions with multiple alternatives
-        Object.entries(question.alternatives).forEach(([key, value]) => {
+        Object.entries(savedQuestion.alternatives).forEach(([key, value]) => {
           const radioButton = document.createElement('input');
           radioButton.type = 'radio';
           radioButton.name = 'answerOption';
@@ -81,31 +78,31 @@ customElements.define('quiz-question',
           const label = document.createElement('label');
           label.textContent = `${key}: ${value}`;
           label.htmlFor = `option${value}`;
-    
-          answerContainer.appendChild(radioButton);
-          answerContainer.appendChild(label);
-        });
+          // When a radio button's state changes (i.e., when it is selected or deselected), the event listener's callback function is executed. In this case, the callback function assigns the value of the selected radio button to the selectedAnswer property of the quiz-question component.
+          // By doing this, the selectedAnswer property is updated with the value of the selected radio button, allowing you to retrieve the user's answer later when needed.
+          radioButton.addEventListener('change', () => {
+            this.selectedAnswer = radioButton.value;
+          }
+          )
+        }
+        )
       } else {
         // Handle questions with a text field
         const textField = document.createElement('input');
         textField.type = 'text';
         textField.id = 'answerInput';
-    
-        answerContainer.appendChild(textField);
+        textField.addEventListener('input', () => {
+          this.selectedAnswer = textField.value;
+        }
+        )
       }
     }
 
     submitAnswer() {
-      // Get the answer from the user input
-      const answerInput = this.shadowRoot.querySelector('#answerInput');
-      const answer = answerInput.value;
-
-       this.dispatchEvent(new CustomEvent('submit-answer', { detail: data }))
-
-      // Send the answer to the server or perform any necessary actions
-      // Here, I'm just logging the answer to the console
-      console.log('Submitted answer:', answer)
-      
+      // Get the selected answer
+      this.selectedAnswer
+      // Dispatch the answer to the parent
+      this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
     }
   }
 )
