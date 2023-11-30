@@ -10,6 +10,8 @@ import '../quiz-question/index.js'
 // import '../high-score/index.js'
 // import '../countdown-timer/index.js'
 
+const INITIAL_QUESTION_URL = 'https://courselab.lnu.se/quiz/question/1'
+
 const template = document.createElement('template')
 template.innerHTML = `
 <style>
@@ -66,6 +68,7 @@ class extends HTMLElement {
     #quizQuestion
     #highScore
     #countdownTimer
+    #nextURL
     
 
     constructor () {
@@ -81,70 +84,72 @@ class extends HTMLElement {
 
       this.#quizQuestion.addEventListener('answer', (event) => {
         event.preventDefault()
-        console.log(event.detail)
-        this.controllAnswer(event.detail.nextURL, event.detail.answer)
+        this.controllAnswer(event)
       })
 
-      this.#nicknameForm.addEventListener('submitNicknameClicked', (event) => this.startGame(event))
+      this.#nicknameForm.addEventListener('submitNicknameClicked', async (event) => await this.startGame(event))
     }
 
     connectedCallback() {
     }
 
     disconnectedCallback() {
-      this.#nicknameForm.removeEventListener('submitNicknameClicked', (event) => this.startGame(event))
+      this.#nicknameForm.removeEventListener('submitNicknameClicked', async (event) => await this.startGame(event))
     }
 
     async startGame(event) {
-      console.log(event.detail)
       this.#nickname = event.detail
       this.#nicknameForm.remove()
-      this.nextQuestion('https://courselab.lnu.se/quiz/question/1')
+      this.nextQuestion(INITIAL_QUESTION_URL)
     }
 
     async nextQuestion (url) {
       const savedQuestion = await this.fetchNextQuestion(url)
+      this.#nextURL = savedQuestion.nextURL
       this.#quizQuestion.showQuestion(savedQuestion)
       // this.#countdownTimer.startTimer()
-      this.controllAnswer()
     }
 
-    async fetchNextQuestion(url = 'https://courselab.lnu.se/quiz/question/1') {
+    async fetchNextQuestion(url) {
       try {
         // Använd fetch API för att hämta nästa fråga från servern
         const response = await fetch(url)
-        const questionData = await response.json()
 
-        console.log(questionData)
-        return questionData
+        if (!response.ok) {
+          throw new Error(`status: ${response.status} statusText: ${response.statusText}`)
+        }
+
+        return await response.json()
       } catch (error) {
-        // Om det uppstår ett fel, logga felet till konsolen
-        console.error('Error fetching question:', error)
+        console.error(error)
       }
     }
 
-    async controllAnswer(nextURL, answer) {
+    async controllAnswer(event) {
       try {
-        const response = await fetch('nextURL', {
+        const response = await fetch(this.#nextURL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(answer)
-        });
-    
-        const data = await response.json();
-    
-        if (data.correct) {
-          const nextURL = data.nextURL;
-          const question = await this.fetchNextQuestion(nextURL);
-          this.showQuestion(question);
-        } else {
-          this.endGame();
+          body: JSON.stringify({
+            answer: event.detail
+          })
+        })
+
+        if (response.status === 400) {
+          this.endGame()
         }
+
+        if (!response.ok) {
+          throw new Error(`status: ${response.status} statusText: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+        this.#nextURL = data.nextURL
+        await this.nextQuestion(this.#nextURL)
       } catch (error) {
-        console.error('Error controlling answer:', error);
-        // Handle the error as needed
+        console.error(error)
       }
     }
 
