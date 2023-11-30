@@ -8,12 +8,15 @@
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
+    .hidden {
+      display: none;
+    }
   </style>
     <div>
-      <form>
-        <h2 id="question-title"></h2>
-        <div id="question-answer"></div>
-        <input id="submitAnswer" type="submit" class="hidden" value="Submit" />
+    <h2 id="question"></h2>
+      <form id="question-form" hidden>
+        <!-- <input id="user-answer"/>
+        <input id="submit-answer" type="submit"  value="Submit" /> -->
       </form>
     </div>
 `
@@ -24,35 +27,36 @@ customElements.define('quiz-question',
    *
    */
   class extends HTMLElement {
-    #questionTitle
-    #questionAnswer
-    #submitAnswer
-    #selectedAnswer
+    #question
+    #userAnswer
+    #questionForm
 
     /**
      *
      */
     constructor () {
       super()
+      this.#userAnswer = ''
 
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      this.#questionTitle = this.shadowRoot.querySelector('#question-title')
-      this.#questionAnswer = this.shadowRoot.querySelector('#question-answer')
-      // this.#answerContainer = this.shadowRoot.querySelector('#answer-container')
-      this.#submitAnswer = this.shadowRoot.querySelector('#submit-answer')
-      this.#selectedAnswer = this.shadowRoot.querySelector('#selected-answer')
+      this.#question = this.shadowRoot.querySelector('#question')
+      // this.#userAnswer = this.shadowRoot.querySelector('#user-answer')
+      // this.#submitAnswer = this.shadowRoot.querySelector('#submit-answer')
+      this.#questionForm = this.shadowRoot.querySelector('#question-form')
+
+      this.#questionForm.addEventListener('submit', (event) => {
+        event.preventDefault()
+        this.submitAnswer()
+      })
     }
 
-    connectecCallback () {
-      this.#submitAnswer.addEventListener('click', this.submitAnswer.bind(this))
+    connectedCallback() {
     }
+    
 
     disconnectedCallback () {
-      if (this.#submitAnswer) {
-        this.#submitAnswer.removeEventListener('click', this.submitAnswer.bind(this))
-      }
     }
 
     /**
@@ -61,49 +65,55 @@ customElements.define('quiz-question',
      */
 
     showQuestion(savedQuestion) {
-      this.#questionAnswer.textContent = '' // Clear previous answer
+      this.#questionForm.hidden = false
+
+      this.#questionForm.innerHTML = ''
 
       // skapar frågans titel
-      this.#questionTitle.textContent = savedQuestion.question
-    
+      this.#question.textContent = savedQuestion.question
+
       if (savedQuestion.alternatives) {
-        // Handle questions with multiple alternatives
         Object.entries(savedQuestion.alternatives).forEach(([key, value]) => {
-          const radioButton = document.createElement('input');
-          radioButton.type = 'radio';
-          radioButton.name = 'answerOption';
-          radioButton.value = key;
-          radioButton.id = `option${value}`;
-    
-          const label = document.createElement('label');
-          label.textContent = `${key}: ${value}`;
-          label.htmlFor = `option${value}`;
-          // When a radio button's state changes (i.e., when it is selected or deselected), the event listener's callback function is executed. In this case, the callback function assigns the value of the selected radio button to the selectedAnswer property of the quiz-question component.
-          // By doing this, the selectedAnswer property is updated with the value of the selected radio button, allowing you to retrieve the user's answer later when needed.
+          const radioButton = document.createElement('input')
+          radioButton.type = 'radio'
+          radioButton.name = 'answerOption'
+          radioButton.value = key
+          radioButton.id = `option${value}`
+
           radioButton.addEventListener('change', () => {
-            this.selectedAnswer = radioButton.value;
-          }
-          )
+            this.#userAnswer = radioButton.value
+          })
+
+          const label = document.createElement('label')
+          label.textContent = `${key}: ${value}`
+          label.htmlFor = `option${value}`
+
+          this.#questionForm.appendChild(radioButton)
+          this.#questionForm.appendChild(label)
         }
         )
       } else {
         // Handle questions with a text field
-        const textField = document.createElement('input');
-        textField.type = 'text';
-        textField.id = 'answerInput';
+        const textField = document.createElement('input')
+        textField.type = 'text'
+        textField.id = 'answerInput'
         textField.addEventListener('input', () => {
-          this.selectedAnswer = textField.value;
+          this.#userAnswer = textField.value
         }
         )
+        this.#questionForm.appendChild(textField)
       }
+      const submitButton = document.createElement('input')
+      submitButton.type = 'submit'
+      this.#questionForm.appendChild(submitButton)
     }
 
     submitAnswer() {
       // Get the selected answer
-      this.selectedAnswer
-      // Dispatch the answer to the parent
-      this.dispatchEvent(new CustomEvent('answer', { detail: answer }));
+      // this.selectedAnswer
+      // const userAnswer = this.#userAnswer.value
+      this.dispatchEvent(new CustomEvent('answer', { detail: this.#userAnswer }))
     }
   }
 )
-      
+
