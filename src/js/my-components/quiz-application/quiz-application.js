@@ -138,22 +138,35 @@ class extends HTMLElement {
         })
 
         if (response.status === 400) {
-          this.endGame()
+          this.endGame();
+        } else if (response.status === 200) {
+          const data = await response.json();
+          this.#nextURL = data.nextURL;
+          await this.nextQuestion(this.#nextURL);
+        } else {
+          throw new Error(`status: ${response.status} statusText: ${response.statusText}`);
         }
+        // if (response.status === 400) {
+        //   this.endGame()
+        // }
 
-        if (!response.ok) {
-          throw new Error(`status: ${response.status} statusText: ${response.statusText}`)
-        }
+        // if (!response.ok) {
+        //   throw new Error(`status: ${response.status} statusText: ${response.statusText}`)
+        // }
 
-        const data = await response.json()
-        this.#nextURL = data.nextURL
-        await this.nextQuestion(this.#nextURL)
+        // const data = await response.json()
+        // this.#nextURL = data.nextURL
+        // await this.nextQuestion(this.#nextURL)
       } catch (error) {
         console.error(error)
       }
     }
 
     endGame () {
+      this.#quizQuestion.remove()
+      this.#countdownTimer.remove()
+      this.#highScore // visa
+
       clearInterval(this.timerInterval)
       this.shadowRoot.getElementById('highScore').updateHighScore(this.nickname, this.timer)
     }

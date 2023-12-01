@@ -11,17 +11,15 @@ template.innerHTML = `
     .hidden {
       display: none;
     }
+    
   </style>
     <div>
     <h2 id="question"></h2>
       <form id="question-form" hidden>
-        <!-- <input id="user-answer"/>
-        <input id="submit-answer" type="submit"  value="Submit" /> -->
       </form>
     </div>
 `
-// lägg in en from med distpatchevent och eventlisnentnensr
-// submitknapp utlöser en hädelse samma som i nicknameform
+
 customElements.define('quiz-question',
   /**
    *
@@ -42,8 +40,6 @@ customElements.define('quiz-question',
         .appendChild(template.content.cloneNode(true))
 
       this.#question = this.shadowRoot.querySelector('#question')
-      // this.#userAnswer = this.shadowRoot.querySelector('#user-answer')
-      // this.#submitAnswer = this.shadowRoot.querySelector('#submit-answer')
       this.#questionForm = this.shadowRoot.querySelector('#question-form')
 
       this.#questionForm.addEventListener('submit', (event) => {
@@ -85,7 +81,7 @@ customElements.define('quiz-question',
           })
 
           const label = document.createElement('label')
-          label.textContent = `${key}: ${value}`
+          label.textContent = value
           label.htmlFor = `option${value}`
 
           this.#questionForm.appendChild(radioButton)
