@@ -1,5 +1,5 @@
 /**
- * The nickname-form component module.
+ * The quiz-application component module.
  *
  * @author Elsa Gas Wikström <eg223ps@student.lnu.se>
  * @version 1.1.0
@@ -51,7 +51,8 @@ template.innerHTML = `
 
 <div>
         <nickname-form></nickname-form>
-        <quiz-question  ></quiz-question>
+        <quiz-question></quiz-question>
+        <h3 class="textGameOver" style="display: none;"> Game over - try again</h3>
         <high-score> </high-score>
         <countdown-timer> </countdown-timer>
 </div>
@@ -60,8 +61,6 @@ customElements.define('quiz-application',
 
 class extends HTMLElement {
     #nickname
-    // #timer
-    // #timerInterval
     #handleNicknameForm
 
     #nicknameForm
@@ -69,7 +68,6 @@ class extends HTMLElement {
     #highScore
     #countdownTimer
     #nextURL
-    
 
     constructor () {
       super()
@@ -82,19 +80,21 @@ class extends HTMLElement {
       this.#highScore = this.shadowRoot.querySelector('high-score')
       this.#countdownTimer = this.shadowRoot.querySelector('countdown-timer')
 
-      this.#quizQuestion.addEventListener('answer', (event) => {
+      this.#quizQuestion.addEventListener('answer', (event) => { // tar emot eventet answer från quiz-question som innehåller användarens svar. Skickar sedan vidare det till controllAnswer
         event.preventDefault()
         this.controllAnswer(event)
       })
 
-      this.#nicknameForm.addEventListener('submitNicknameClicked', async (event) => await this.startGame(event))
+      this.#nicknameForm.addEventListener('submitNicknameClicked', async (event) => await this.startGame(event)) // tar emot eventet submitNicknameClicked från nickname-form som innehåller användarens namn. Skickar sedan vidare det till startGame
+      this.#countdownTimer.addEventListener('timeout', async (event) => { await this.startTimer(event) }) // när användaren har skrivit in sitt namn och klickat på submit så startas nedräkningen
     }
 
     connectedCallback() {
     }
 
     disconnectedCallback() {
-      this.#nicknameForm.removeEventListener('submitNicknameClicked', async (event) => await this.startGame(event))
+      this.#nicknameForm.removeEventListener('submitNicknameClicked', async (event) => await this.startGame(event)) // eventet försvinner från DOM när användaren har skrivit in sitt namn och klickat på submit
+      this.#countdownTimer.removeEventListener('timeout', async (event) => { await this.startTimer(event) })
     }
 
     async startGame(event) {
@@ -104,15 +104,26 @@ class extends HTMLElement {
     }
 
     async nextQuestion (url) {
-      const savedQuestion = await this.fetchNextQuestion(url)
-      this.#nextURL = savedQuestion.nextURL
-      this.#quizQuestion.showQuestion(savedQuestion)
-      // this.#countdownTimer.startTimer()
+      try {
+        const savedQuestion = await this.fetchNextQuestion(url)
+        await this.showQuestion(savedQuestion)
+        await this.startTimer()
+
+        this.#countdownTimer.startTimer(() => { // Starta timer och skicka med en callback-funktion
+          this.endGame()
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    //   const savedQuestion = await this.fetchNextQuestion(url)
+    //   this.#nextURL = savedQuestion.nextURL
+    //   this.#quizQuestion.showQuestion(savedQuestion)
+    //   this.#countdownTimer.startTimer() // starta timer
+    // }
     }
 
-    async fetchNextQuestion(url) {
+    async fetchNextQuestion (url) {
       try {
-        // Använd fetch API för att hämta nästa fråga från servern
         const response = await fetch(url)
 
         if (!response.ok) {
@@ -125,7 +136,7 @@ class extends HTMLElement {
       }
     }
 
-    async controllAnswer(event) {
+    async controllAnswer (event) {
       try {
         const response = await fetch(this.#nextURL, {
           method: 'POST',
@@ -138,13 +149,23 @@ class extends HTMLElement {
         })
 
         if (response.status === 400) {
-          this.endGame();
+          const gameOverText = document.querySelector('.textGameOver')
+          gameOverText.style.display = 'block'
+          
+          setTimeout(() => { // we use setTimeout() to wait for 5 seconds (5000 milliseconds) before executing the function inside the callback. Inside the callback, we hide the "Game over - try again" text by setting the display property to "none" and then call the startGame() function.
+            gameOverText.style.display = 'none'
+            this.startGame()
+          }, 5000)
+          // this.startGame() // starta om spelet?
+          // this.endGame()
+          // const gameOverText = document.querySelector('.textGameOver') // måste inte detta ske under några sekunder innan man skickas tillbaka till formuläret?
+          // gameOverText.style.display = 'block' // we set the display property of the selected element to "block" to make it visible.
         } else if (response.status === 200) {
-          const data = await response.json();
-          this.#nextURL = data.nextURL;
-          await this.nextQuestion(this.#nextURL);
+          const data = await response.json()
+          this.#nextURL = data.nextURL
+          await this.nextQuestion(this.#nextURL)
         } else {
-          throw new Error(`status: ${response.status} statusText: ${response.statusText}`);
+          throw new Error(`status: ${response.status} statusText: ${response.statusText}`)
         }
         // if (response.status === 400) {
         //   this.endGame()
@@ -162,13 +183,14 @@ class extends HTMLElement {
       }
     }
 
-    endGame () {
+    async endGame() {
       this.#quizQuestion.remove()
       this.#countdownTimer.remove()
-      this.#highScore // visa
 
-      clearInterval(this.timerInterval)
-      this.shadowRoot.getElementById('highScore').updateHighScore(this.nickname, this.timer)
+      await this.#highScore.updateHighScore(this.nickname, this.timer) // kolla om det finns en metod updateHighScore i high-score. samt hur man stoppar in värdet in i den metoden
+
+      // clearInterval(this.timerInterval) // har inte timerInterval som privat fält
+      // this.shadowRoot.getElementById('highScore').updateHighScore(this.nickname, this.timer)
     }
 })
 

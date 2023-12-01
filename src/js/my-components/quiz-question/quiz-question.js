@@ -50,9 +50,9 @@ customElements.define('quiz-question',
 
     connectedCallback() {
     }
-    
 
     disconnectedCallback () {
+      this.#questionForm.removeEventListener('submit', this.submitAnswer) // behövs denna raden?
     }
 
     /**
@@ -105,9 +105,6 @@ customElements.define('quiz-question',
     }
 
     submitAnswer() {
-      // Get the selected answer
-      // this.selectedAnswer
-      // const userAnswer = this.#userAnswer.value
       this.dispatchEvent(new CustomEvent('answer', { detail: this.#userAnswer }))
     }
   }

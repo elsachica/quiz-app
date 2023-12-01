@@ -1,134 +1,137 @@
-// /**
-//  * The countdown-timer web component module.
-//  *
-//  * @author Elsa Gas Wikström <eg223ps@student.lnu.se>
-//  * @version 1.0.0
-//  */
+/**
+ * The countdown-timer web component module.
+ *
+ * @author Elsa Gas Wikström <eg223ps@student.lnu.se>
+ * @version 1.0.0
+ */
 
-// const template = document.createElement('template');
-// template.innerHTML = `
-//   <style>
-//     .timer {
-//       font-size: 1.5em;
-//       color: #333;
-//     }
-//   </style>
-//   <div class="timer"></div>
-// `;
+const template = document.createElement('template');
+template.innerHTML = `
+  <style>
+    .timer {
+      font-size: 1.5em;
+      color: #333;
+    }
+  </style>
+  <div class="timer">
 
-// customElements.define('countdown-timer',
-//   /**
-//    * Represents a countdown-timer element.
-//    */
-//   class extends HTMLElement {
-//     /**
-//      * The timer element.
-//      *
-//      * @type {HTMLDivElement}
-//      */
-//     #timerElement;
+  </div>
+`
 
-//     /**
-//      * The time limit for the timer.
-//      *
-//      * @type {number}
-//      */
-//     #timeLimit;
+customElements.define('countdown-timer',
+  /**
+   * Represents a countdown-timer element.
+   */
+  class extends HTMLElement {
+    /**
+     * The timer element.
+     *
+     * @type {HTMLDivElement}
+     */
+    #timerElement
 
-//     /**
-//      * The current time left on the timer.
-//      *
-//      * @type {number}
-//      */
-//     #currentTime
+    /**
+     * The time limit for the timer.
+     *
+     * @type {number}
+     */
+    #timeLimit
 
-//     /**
-//      * The interval ID for the timer.
-//      *
-//      * @type {number}
-//      */
-//     #timerInterval
+    /**
+     * The current time left on the timer.
+     *
+     * @type {number}
+     */
+    #currentTime
 
-//     /**
-//      * Creates an instance of the current type.
-//      */
-//     constructor() {
-//       super();
+    /**
+     * The interval ID for the timer.
+     *
+     * @type {number}
+     */
+    #timerInterval
 
-//       // Attach a shadow DOM tree to this element and
-//       // append the template to the shadow root.
-//       this.attachShadow({ mode: 'open' })
-//         .appendChild(template.content.cloneNode(true));
+    /**
+     * Creates an instance of the current type.
+     */
+    constructor () {
+      super()
 
-//       // Get the timer element in the shadow root.
-//       this.#timerElement = this.shadowRoot.querySelector('.timer');
-//     }
+      // Attach a shadow DOM tree to this element and
+      // append the template to the shadow root.
+      this.attachShadow({ mode: 'open' })
+        .appendChild(template.content.cloneNode(true))
 
-//     /**
-//      * Attributes to monitor for changes.
-//      *
-//      * @returns {string[]} A string array of attributes to monitor.
-//      */
-//     static get observedAttributes() {
-//       return ['limit'];
-//     }
+      // Get the timer element in the shadow root.
+      this.#timerElement = this.shadowRoot.querySelector('.timer')
+    }
 
-//     /**
-//      * Called after the element is inserted into the DOM.
-//      */
-//     connectedCallback() {
-//       if (!this.hasAttribute('limit')) {
-//         this.setAttribute('limit', 20);
-//       }
+    /**
+     * Attributes to monitor for changes.
+     *
+     * @returns {string[]} A string array of attributes to monitor.
+     */
+    static get observedAttributes () {
+      return ['limit']
+    }
 
-//       this.#timeLimit = parseInt(this.getAttribute('limit'), 10);
-//       this.#currentTime = this.#timeLimit;
+    /**
+     * Called after the element is inserted into the DOM.
+     */
+    connectedCallback () {
+      if (!this.hasAttribute('limit')) {
+        this.setAttribute('limit', 20)
+      }
 
-//       this.#updateTimerDisplay();
-//       this.#startTimer();
-//     }
+      this.#timeLimit = parseInt(this.getAttribute('limit'), 10) // är denna rad nödvänding?
+      this.#currentTime = this.#timeLimit
 
-//     /**
-//      * Called when observed attribute(s) changes.
-//      *
-//      * @param {string} name - The attribute's name.
-//      * @param {*} oldValue - The old value.
-//      * @param {*} newValue - The new value.
-//      */
-//     attributeChangedCallback(name, oldValue, newValue) {
-//       if (name === 'limit' && oldValue !== newValue) {
-//         this.#timeLimit = parseInt(newValue, 10);
-//         this.#currentTime = this.#timeLimit;
-//         this.#updateTimerDisplay();
-//         this.#startTimer();
-//       }
-//     }
+      this.#updateTimerDisplay()
+      this.#startTimer()
+    }
 
-//     /**
-//      * Updates the timer display.
-//      */
-//     #updateTimerDisplay() {
-//       this.#timerElement.textContent = this.#currentTime;
-//     }
+    /**
+     * Called when observed attribute(s) changes.
+     *
+     * @param {string} name - The attribute's name.
+     * @param {*} oldValue - The old value.
+     * @param {*} newValue - The new value.
+     */
+    attributeChangedCallback (name, oldValue, newValue) {
+      if (name === 'limit' && oldValue !== newValue) {
+        this.#timeLimit = parseInt(newValue, 10)
+        this.#currentTime = this.#timeLimit
+        this.#updateTimerDisplay()
+        this.#startTimer()
+      }
+    }
 
-//     /**
-//      * Starts the countdown timer.
-//      */
-//     #startTimer() {
-//       this.#timerInterval = setInterval(() => {
-//         this.#currentTime--;
+    /**
+     * Updates the timer display.
+     */
+    #updateTimerDisplay () {
+      this.#timerElement.textContent = this.#currentTime
+    }
 
-//         if (this.#currentTime < 0) {
-//           this.#currentTime = 0;
-//           this.dispatchEvent(new Event('timeout'));
-//           clearInterval(this.#timerInterval);
-//         }
+    /**
+     * Starts the countdown timer.
+     */
+    #startTimer () {
+      this.#timerInterval = setInterval(() => {
+        this.#currentTime--
 
-//         this.#updateTimerDisplay();
-//       }, 1000);
-//     }
-//   }
-// );
+        if (this.#currentTime < 0) {
+          this.#currentTime = 0
+          this.dispatchEvent(new Event('timeout'))
+          clearInterval(this.#timerInterval)
+        }
+
+        this.#updateTimerDisplay()
+      }, 1000)
+      // this.dispatchEvent(new CustomEvent('startTimer', { detail: this.#startTimer })) // vill vi starta tiden eller ska timeout ske när vi kallar på countdown-timer?
+    }
+  }
+);
 
 // // // ------------------ Andra lösningen ------------------ //
 
